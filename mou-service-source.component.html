@@ -1,0 +1,122 @@
+<main class="govuk-main-wrapper govuk-main-wrapper--auto-spacing" id="main-content" role="main">
+
+  <h1 class="govuk-heading-xl">
+    Registrácia zdrojovej služby
+  </h1>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <p class="govuk-body-l">Zadajte údaje potrebné pre registráciu zdrojovej služby</p>
+    </div>
+  </div>
+
+  <div *ngIf="registrationError">
+    <mou-service-error [errorLabel] = "'Chyba pri registrácii zdrojovej služby'"
+                       [messageText]="'Službu nebolo možné vytvoriť.'"
+                       [serviceError] = registrationError!>
+    </mou-service-error>
+  </div>
+
+  <div *ngIf="!formsAreValid" id="error-summary-alert"
+       class="govuk-error-summary optional-extra-class"
+       aria-labelledby="error-summary-title" role="alert" tabindex="-1"
+       data-module="govuk-error-summary">
+    <h2 class="govuk-error-summary__title" id="error-summary-title">
+      Chyba pri registrácii
+    </h2>
+    <div class="govuk-error-summary__body">
+      <p>Pre registráciu služby je potrebné skontrolovať nasledujúce údaje: </p>
+    </div>
+    <ul class="govuk-list govuk-error-summary__list">
+      <li *ngFor="let error of formErrors">
+        <a href="javascript:void(0)" class="clickable"
+           (click)="onErrorClick(error.controlName)">{{error | inputError}}</a>
+      </li>
+    </ul>
+  </div>
+
+  <div class="govuk-accordion" data-module="idsk-accordion" id="registration-section-accordion-source"
+       data-attribute="value">
+    <div class="govuk-accordion__controls">
+      <button class="govuk-accordion__open-all" data-open-title="Otvoriť všetky"
+              data-close-title="Zatvoriť všetky" type="button" aria-expanded="false">
+				<span class="govuk-visually-hidden govuk-accordion__controls-span"
+              data-section-title="sekcie"></span></button>
+    </div>
+    <div class="govuk-accordion__section "
+         [ngClass]="basicDescrValid ? '' : 'govuk-accordion__section--expanded'">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+					<span class="govuk-accordion__section-button" id="-heading-1">
+						Základný popis služby
+					</span>
+        </h2>
+        <div class="govuk-accordion__section-summary govuk-body" id="-summary-1">
+          Pre rýchlu identifikáciu služby a jej vyhľadávanie v zozname služieb.
+        </div>
+      </div>
+
+      <div id="-content-1" class="govuk-accordion__section-content" aria-labelledby="-heading-1">
+        <mou-basic-description [serviceType]="'source'"></mou-basic-description>
+      </div>
+    </div>
+
+    <div class="govuk-accordion__section "
+         [ngClass]="serviceProviderValid ? '' : 'govuk-accordion__section--expanded'">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+					<span class="govuk-accordion__section-button" id="-heading-4">
+						Poskytovateľ služby
+					</span>
+        </h2>
+        <div class="govuk-accordion__section-summary govuk-body" id="-summary-4">
+          Kontaktné údaje poskytovateľa služby.
+        </div>
+      </div>
+      <div id="-content-4" class="govuk-accordion__section-content" aria-labelledby="-heading-4">
+        <mou-service-provider></mou-service-provider>
+      </div>
+    </div>
+
+    <div class="govuk-accordion__section "
+         [ngClass]="processedDataDescValid ? '' : 'govuk-accordion__section--expanded'">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+					<span class="govuk-accordion__section-button" id="-heading-3">
+						Popis spracovávaných dát
+					</span>
+        </h2>
+        <div class="govuk-accordion__section-summary govuk-body" id="-summary-3">
+          Každá služba, poskytujúca dáta, musí opísať dáta, ktoré spracúva.
+        </div>
+      </div>
+      <div id="-content-3" class="govuk-accordion__section-content" aria-labelledby="-heading-3">
+        <mou-processed-data-description></mou-processed-data-description>
+      </div>
+    </div>
+
+    <div class="govuk-accordion__section "
+         [ngClass]="actualizationValid ? '' : 'govuk-accordion__section--expanded'">
+      <div class="govuk-accordion__section-header">
+        <h2 class="govuk-accordion__section-heading">
+					<span class="govuk-accordion__section-button" id="-heading-3">
+						Frekvencia aktualizácií
+					</span>
+        </h2>
+        <div class="govuk-accordion__section-summary govuk-body" id="-summary-3">
+          Spôsoby aktualizácií, ktoré služba podporuje.
+        </div>
+      </div>
+      <div id="-content-3" class="govuk-accordion__section-content" aria-labelledby="-heading-3">
+        <p class='govuk-body'></p>
+        <mou-actualization-code-list></mou-actualization-code-list>
+      </div>
+    </div>
+
+  </div>
+
+  <button class="idsk-button idsk-button--start" data-module="idsk-button" (click)="registry()">
+    Zaregistrovať službu
+  </button>
+
+</main>
