@@ -1,0 +1,130 @@
+<div class="govuk-width-container">
+  <form [formGroup]="processedDataDescFormGroup">
+
+    <div formArrayName="datasets"
+         *ngFor="let datasetItem of getDatasetsControls(); let i_ds = index;">
+      <div class="govuk-form-group v-align-center">
+
+        <div class="govuk-!-width-three-quarters">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m"> Dataset č. {{i_ds + 1}}
+          </legend>
+        </div>
+
+        <div class="govuk-!-width-one-quarter">
+          <a class="govuk-link clickable" title="Odobrať dataset" *ngIf="i_ds > 0"
+             (click)="removeDatasetItem(i_ds)">Odobrať dataset č.{{i_ds + 1}}</a>
+        </div>
+      </div>
+
+      <div class="govuk-form-group" [formGroupName]="i_ds">
+
+        <div class="govuk-form-group"
+             [ngClass]="{'govuk-form-group--error' : !isCategoryValid(i_ds)}">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m"> Kategórie</legend>
+            <span class="govuk-error-message d-block" *ngIf="!isCategoryValid(i_ds)">
+                        <span class="govuk-visually-hidden">Chyba:</span>
+                       Vyberte aspoň jednu kategóriu</span>
+            <div id="categories-hint" class="govuk-hint"> Vyberte kategórie</div>
+            <div class="govuk-checkboxes" id="categories">
+              <div class="govuk-checkboxes__item" *ngFor="let cat of categories.codeItems">
+                <input #check type="checkbox" class="govuk-checkboxes__input"
+                       (change)="onCategoriesCheckChange(cat!, check.checked, i_ds)">
+                <label class="govuk-label govuk-checkboxes__label" for="categories">{{cat.label}}</label>
+              </div>
+            </div>
+          </fieldset>
+        </div>
+
+        <div formArrayName="descriptions" class="govuk-tabs" data-module="govuk-tabs">
+          <div class="govuk-tabs__list" role="tablist">
+            <div class="govuk-tabs__list-item  " (click)="activeTab(il_descr)"
+                 [ngClass]="{'govuk-tabs__list-item--selected ' : il_descr === activeTabIndex}"
+                 *ngFor="let descriptionItem of getDescriptionsControls(i_ds); let il_descr = index;">
+              <a class="govuk-tabs__tab" [id]="'il_descr'" role="tabpanel"
+                 tabindex="{{il_descr}}">{{descriptionItem.get(
+                'language')?.value.toUpperCase()}}</a>
+            </div>
+          </div>
+
+          <div [formGroupName]="i_descr"
+               *ngFor="let descriptionItem of getDescriptionsControls(i_ds); let i_descr = index;">
+            <div *ngIf="i_descr === activeTabIndex">
+              <div class="govuk-tabs__panel" id="'tab-descriptions-0'" role="tabpanel"
+                   aria-labelledby="tab_past-day">
+
+                <div class="govuk-form-group">
+                  <div class="govuk-checkboxes">
+                    <div class="govuk-checkboxes__item">
+                      <input #check class="govuk-checkboxes__input" id="allDataId" name="allDataId" type="checkbox" value="yes"
+                             aria-describedby="allDataId"
+                             [checked]="getDatasetsControls()[i_ds].get('allData')?.value === true"
+                             (change)="onDataAllChange(check.checked, i_ds)">
+                      <label class="govuk-label govuk-checkboxes__label" for="allDataId">
+                        Dataset je určený pre všetky dáta
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="govuk-form-group"
+                     [ngClass]="{'govuk-form-group--error' : !isTitleValid(i_ds, i_descr, descriptionItem.get('language')?.value)}">
+                  <label class="govuk-label" for="datasetTitle">Názov datasetu</label>
+                  <span class="govuk-error-message d-block"
+                        *ngIf="!isTitleValid(i_ds, i_descr, descriptionItem.get('language')?.value)">
+                                        <span class="govuk-visually-hidden">Chyba:</span>
+                    {{getErrorMessage(i_ds, i_descr, 'datasetTitle', 'Názov datasetu')}}</span>
+                  <input type="text" class="govuk-input" id="datasetTitle" name="datasetTitle"
+                         required
+                         [ngClass]="{'govuk-input--error' : !isTitleValid(i_ds, i_descr, descriptionItem.get('language')?.value)}"
+                         formControlName="datasetTitle" (change)="handleDatasetTitle(i_ds, i_descr, 'datasetTitle')">
+                </div>
+
+                <div class="govuk-form-group"
+                     [ngClass]="{'govuk-form-group--error' : !isDescriptionValid(i_ds,i_descr)}">
+                  <label class="govuk-label" for="datasetDescription">Popis datasetu</label>
+                  <span class="govuk-error-message d-block"
+                        *ngIf="!isDescriptionValid(i_ds,i_descr)">
+                                        <span class="govuk-visually-hidden">Chyba:</span>
+                                        Zadajte popis datasetu</span>
+                  <textarea type="textarea" class="govuk-textarea" id="datasetDescription"
+                            name="datasetDescription" required
+                            [ngClass]="{'govuk-textarea--error' : !isDescriptionValid(i_ds,i_descr)}"
+                            formControlName="datasetDescription"></textarea>
+                </div>
+
+                <div class="govuk-form-group">
+                  <label class="govuk-label" for="keywords">Kľúčové slová (nepovinný údaj)</label>
+                  <div formArrayName="keywords" id="keywords"
+                       *ngFor="let keywordItem of getKeywordsControls(i_ds, i_descr); let k_i = index;">
+                    <div class="govuk-form-group v-align-center" [formGroupName]="k_i">
+                      <div class="govuk-!-width-three-quarters">
+                        <input type="text" class="govuk-input" id="keywordItem" name="keywordItem"
+                               formControlName="keywordItem">
+                      </div>
+                      <div class="govuk-!-width-one-quarter text-center">
+                        <a class="govuk-link clickable" title="Odobrať"
+                           (click)="removeKeywordItem(i_ds, i_descr, k_i)">Odobrať</a>
+                      </div>
+                    </div>
+                    <div></div>
+                  </div>
+                  <a class="govuk-link clickable" title="Pridať klúčové slovo"
+                     (click)="addKeywordItem(i_ds, i_descr)">+ Pridať kľúčové slovo</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible">
+
+      </div>
+    </div>
+
+    <a class="govuk-link clickable" title="Pridať klúčové slovo"
+       (click)="addDatasetItem()">+ Pridať dataset</a>
+
+  </form>
+</div>
